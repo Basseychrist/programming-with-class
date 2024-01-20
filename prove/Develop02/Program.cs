@@ -20,7 +20,7 @@ public class Program
             {
                 case "1":
                     // Generate a random prompt
-                    string[] prompts = { "Prompt 1", "Prompt 2", "Prompt 3", "Prompt 4", "Prompt 5" };
+                    string[] prompts = { "Who was the most interesting person I interacted with today? ", "What was the best part of my day? ", "What was the strongest emotion I felt today? ", "How did I see the hand of the Lord in my life today? ", "If I had one thing I could do over today, what would it be? " };
                     Random random = new Random();
                     string randomPrompt = prompts[random.Next(prompts.Length)];
 

@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 public class Journal
 {
     private List<Entry> entries;
@@ -12,24 +15,39 @@ public class Journal
         entries.Add(entry);
     }
 
-    public void DisplayEntries()
+    public List<Entry> GetEntries()
     {
-        foreach (Entry entry in entries)
+        return entries;
+    }
+    
+    public void ClearEntries()
+    {
+        entries.Clear();
+    }
+    
+    public void LoadFromCSV(string filePath)
+    {
+        // Code to load entries from CSV file
+        // Implement logic to parse CSV file and create Entry objects
+    }
+    
+    public void SaveToCSV(string filePath)
+    {
+        // Code to save entries to CSV file
+        using (StreamWriter writer = new StreamWriter(filePath))
         {
-            Console.WriteLine($"Date: {entry.Date}");
-            Console.WriteLine($"Prompt: {entry.Prompt}");
-            Console.WriteLine($"Response: {entry.Response}");
-            Console.WriteLine();
+            // Write CSV header
+            writer.WriteLine("Prompt,Response,Date");
+
+            // Write each entry to CSV file
+            foreach (Entry entry in entries)
+            {
+                // Escape quotation marks in response
+                string response = entry.Response.Replace("\"", "\"\"");
+
+                // Write entry as CSV row
+                writer.WriteLine($"\"{entry.Prompt}\",\"{response}\",\"{entry.Date.ToString("yyyy-MM-dd HH:mm:ss")}\"");
+            }
         }
-    }
-
-    public void SaveToFile(string filename)
-    {
-        // Code to save the entries to a file
-    }
-
-    public void LoadFromFile(string filename)
-    {
-        // Code to load entries from a file
     }
 }
