@@ -10,43 +10,60 @@ public class Journal
         entries = new List<Entry>();
     }
 
-    public void AddEntry(Entry entry)
+    public void AddEntry(string prompt, string response)
     {
+        Entry entry = new Entry
+        {
+            Prompt = prompt,
+            Response = response,
+            Date = DateTime.Now
+        };
         entries.Add(entry);
     }
 
-    public List<Entry> GetEntries()
+    public List<Entry> GetAllEntries()
     {
         return entries;
     }
-    
-    public void ClearEntries()
-    {
-        entries.Clear();
-    }
-    
-    public void LoadFromCSV(string filePath)
-    {
-        // Code to load entries from CSV file
-        // Implement logic to parse CSV file and create Entry objects
-    }
-    
-    public void SaveToCSV(string filePath)
-    {
-        // Code to save entries to CSV file
-        using (StreamWriter writer = new StreamWriter(filePath))
-        {
-            // Write CSV header
-            writer.WriteLine("Prompt,Response,Date");
 
-            // Write each entry to CSV file
+    public void SaveToFile(string filename)
+    {
+        using (StreamWriter writer = new StreamWriter(filename))
+        {
             foreach (Entry entry in entries)
             {
-                // Escape quotation marks in response
-                string response = entry.Response.Replace("\"", "\"\"");
+                // Enclose response in double quotes to handle commas and quotation marks correctly
+                string response = "\"" + entry.Response.Replace("\"", "\"\"") + "\"";
+                string csvLine = $"{entry.Prompt},{response},{entry.Date.ToString()}";
+                writer.WriteLine(csvLine);
+            }
+        }
+    }
 
-                // Write entry as CSV row
-                writer.WriteLine($"\"{entry.Prompt}\",\"{response}\",\"{entry.Date.ToString("yyyy-MM-dd HH:mm:ss")}\"");
+    public void LoadFromFile(string filename)
+    {
+        entries.Clear();
+
+        using (StreamReader reader = new StreamReader(filename))
+        {
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                string[] values = line.Split(',');
+                if (values.Length == 3)
+                {
+                    string prompt = values[0];
+                    string response = values[1].Trim('"');
+                    DateTime date = DateTime.Parse(values[2]);
+
+                    Entry entry = new Entry
+                    {
+                        Prompt = prompt,
+                        Response = response,
+                        Date = date
+                    };
+                    entries.Add(entry);
+                }
             }
         }
     }

@@ -1,71 +1,91 @@
-public class Program
+class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
         Journal journal = new Journal();
-        bool quit = false;
+        string filename = "journal.csv";
 
-        while (!quit)
+        bool isRunning = true;
+        while (isRunning)
         {
             Console.WriteLine("1. Write");
             Console.WriteLine("2. Display");
             Console.WriteLine("3. Load");
             Console.WriteLine("4. Save");
             Console.WriteLine("5. Quit");
+            Console.Write("Choose an option: ");
 
-            Console.Write("Enter your choice: ");
-            string choice = Console.ReadLine();
+            string input = Console.ReadLine();
+            Console.WriteLine();
 
-            switch (choice)
+            switch (input)
             {
                 case "1":
-                    // Generate a random prompt
-                    string[] prompts = { "Who was the most interesting person I interacted with today? ", "What was the best part of my day? ", "What was the strongest emotion I felt today? ", "How did I see the hand of the Lord in my life today? ", "If I had one thing I could do over today, what would it be? " };
-                    Random random = new Random();
-                    string randomPrompt = prompts[random.Next(prompts.Length)];
-
-                    // Get user response
-                    Console.Write($"{randomPrompt}: ");
-                    string response = Console.ReadLine();
-
-                    // Create a new entry and add it to the journal
-                    Entry entry = new Entry
-                    {
-                        Response = response,
-                        Prompt = randomPrompt,
-                        Date = DateTime.Now
-                    };
-                    journal.AddEntry(entry);
+                    WriteEntry(journal);
                     break;
-
                 case "2":
-                    // Display all entries in the journal
-                    journal.DisplayEntries();
+                    DisplayEntries(journal);
                     break;
-
                 case "3":
-                    // Load entries from a file
-                    Console.Write("Enter the filename: ");
-                    string loadFilename = Console.ReadLine();
-                    journal.LoadFromFile(loadFilename);
+                    LoadJournal(journal, filename);
                     break;
-
                 case "4":
-                    // Save entries to a file
-                    Console.Write("Enter the filename: ");
-                    string saveFilename = Console.ReadLine();
-                    journal.SaveToFile(saveFilename);
+                    SaveJournal(journal, filename);
                     break;
-
                 case "5":
-                    // Quit the program
-                    quit = true;
+                    isRunning = false;
                     break;
-
                 default:
-                    Console.WriteLine("Invalid choice. Please try again.");
+                    Console.WriteLine("Invalid option. Please try again.");
                     break;
             }
+
+            Console.WriteLine();
         }
+    }
+
+    static void WriteEntry(Journal journal)
+    {
+        string[] prompts = {
+            "Who was the most interesting person I interacted with today?",
+            "What was the best part of my day?",
+            "What was the strongest emotion I felt today?",
+            "How did I see the hand of the Lord in my life today?",
+            "If I had one thing I could do over today, what would it be?"
+        };
+
+        Random random = new Random();
+        int randomIndex = random.Next(prompts.Length);
+        string prompt = prompts[randomIndex];
+
+        Console.WriteLine(prompt);
+        string response = Console.ReadLine();
+
+        journal.AddEntry(prompt, response);
+    }
+
+    static void DisplayEntries(Journal journal)
+    {
+        List<Entry> entries = journal.GetAllEntries();
+
+        foreach (Entry entry in entries)
+        {
+            Console.WriteLine($"Prompt: {entry.Prompt}");
+            Console.WriteLine($"Response: {entry.Response}");
+            Console.WriteLine($"Date: {entry.Date}");
+            Console.WriteLine();
+        }
+    }
+
+    static void LoadJournal(Journal journal, string filename)
+    {
+        journal.LoadFromFile(filename);
+        Console.WriteLine("Journal loaded successfully!");
+    }
+
+    static void SaveJournal(Journal journal, string filename)
+    {
+        journal.SaveToFile(filename);
+        Console.WriteLine("Journal saved successfully!");
     }
 }
