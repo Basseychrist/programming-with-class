@@ -1,70 +1,70 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 
-public class Journal
+class Journal
 {
-    private List<Entry> entries;
+    private List<Entry> entries = new List<Entry>();
 
-    public Journal()
+    public List<Entry> Entries
     {
-        entries = new List<Entry>();
+        get { return entries; }
     }
 
-    public void AddEntry(string prompt, string response)
+    public void AddEntry(Entry entry)
     {
-        Entry entry = new Entry
-        {
-            Prompt = prompt,
-            Response = response,
-            Date = DateTime.Now
-        };
         entries.Add(entry);
     }
 
-    public List<Entry> GetAllEntries()
+    public void DisplayEntries()
     {
-        return entries;
-    }
-
-    public void SaveToFile(string filename)
-    {
-        using (StreamWriter writer = new StreamWriter(filename))
+        foreach (var entry in entries)
         {
-            foreach (Entry entry in entries)
-            {
-                // Enclose response in double quotes to handle commas and quotation marks correctly
-                string response = "\"" + entry.Response.Replace("\"", "\"\"") + "\"";
-                string csvLine = $"{entry.Prompt},{response},{entry.Date.ToString()}";
-                writer.WriteLine(csvLine);
-            }
+            Console.WriteLine(entry);
         }
     }
 
-    public void LoadFromFile(string filename)
+    public void SaveToFile(string fileName)
+    {
+        using (StreamWriter writer = new StreamWriter(fileName))
+        {
+            foreach (var entry in entries)
+            {
+                writer.WriteLine(entry.ToString());
+            }
+        }
+        Console.WriteLine("Journal saved to file: " + fileName);
+    }
+
+    public void LoadFromFile(string fileName)
     {
         entries.Clear();
 
-        using (StreamReader reader = new StreamReader(filename))
+        try
         {
-            string line;
-            while ((line = reader.ReadLine()) != null)
+            using (StreamReader reader = new StreamReader(fileName))
             {
-                string[] values = line.Split(',');
-                if (values.Length == 3)
+                while (!reader.EndOfStream)
                 {
-                    string prompt = values[0];
-                    string response = values[1].Trim('"');
-                    DateTime date = DateTime.Parse(values[2]);
-
-                    Entry entry = new Entry
+                    string[] parts = reader.ReadLine().Split('|');
+                    if (parts.Length == 3)
                     {
-                        Prompt = prompt,
-                        Response = response,
-                        Date = date
-                    };
-                    entries.Add(entry);
+                        string date = parts[0].Trim();
+                        string prompt = parts[1].Trim();
+                        string response = parts[2].Trim();
+                        entries.Add(new Entry(date, prompt, response));
+                    }
                 }
             }
+            Console.WriteLine("Journal loaded from file: " + fileName);
+        }
+        catch (FileNotFoundException)
+        {
+            Console.WriteLine("File not found: " + fileName);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error loading file: " + ex.Message);
         }
     }
 }

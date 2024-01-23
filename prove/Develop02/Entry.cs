@@ -1,6 +1,18 @@
-public class Entry
+class Entry
 {
-    public string Response { get; set; }
-    public string Prompt { get; set; }
-    public DateTime Date { get; set; }
+    public string Date { get; }
+    public string Prompt { get; }
+    public string Response { get; }
+
+    public Entry(string date, string prompt, string response)
+    {
+        Date = date;
+        Prompt = prompt;
+        Response = response;
+    }
+
+    public override string ToString()
+    {
+        return $"{Date} | {Prompt} | {Response}";
+    }
 }
